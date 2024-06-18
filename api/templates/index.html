@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Phishing de URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #container {
+            width: 400px;
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h2>Verificador de Phishing de URL</h2>
+        <input type="text" id="urlInput" placeholder="Digite a URL">
+        <input type="file" id="fileInput" accept=".txt">
+        <button onclick="checkURL()">Verificar</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function checkURL() {
+            var url = document.getElementById("urlInput").value.trim();
+            var file = document.getElementById("fileInput").files[0];
+        
+            if (url !== "" && file) {
+                alert("Por favor, preencha apenas o campo de URL ou selecione um arquivo, não ambos.");
+            } else if (url !== "") {
+                var data = { "url": url };
+        
+                fetch("http://localhost:5000/classify", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        displayResult(data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro:", error);
+                });
+            } else if (file) {
+                var formData = new FormData();
+                formData.append("file", file);
+        
+                fetch("http://localhost:5000/classify", {
+                    method: "POST",
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        displayResult(data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erro:", error);
+                });
+            } else {
+                alert("Por favor, digite uma URL ou escolha um arquivo.");
+            }
+        }
+        
+        function displayResult(data) {
+            var resultElement = document.getElementById("result");
+            if (Array.isArray(data)) {
+                resultElement.innerHTML = "<strong>Resultados:</strong><br>";
+                data.forEach(item => {
+                    resultElement.innerHTML += item.url + " - " + (item.phishing ? "Phishing" : "Legítimo") + "<br>";
+                });
+            } else {
+                resultElement.innerHTML = "<strong>Resultado:</strong><br>";
+                resultElement.innerHTML += data.url + " - " + (data.phishing ? "Phishing" : "Legítimo");
+            }
+        }
+    </script>
+</body>
+</html>
