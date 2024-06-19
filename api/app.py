@@ -86,4 +86,5 @@ def classify_url():
         return jsonify({'error': 'No JSON data or file provided'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
+
