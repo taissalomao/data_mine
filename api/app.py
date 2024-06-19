@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import joblib
@@ -34,9 +35,12 @@ def extrair_features(url):
     }
     return features
 
-# Carregue os modelos treinados
-modelo_IF = joblib.load('modelo_IF.pkl')
-modelo_RF = joblib.load('modelo_RF.pkl')
+# Caminho dos modelos treinados
+modelo_if_path = os.path.join(os.path.dirname(__file__), 'modelo_IF.pkl')
+modelo_rf_path = os.path.join(os.path.dirname(__file__), 'modelo_RF.pkl')
+
+modelo_IF = joblib.load(modelo_if_path)
+modelo_RF = joblib.load(modelo_rf_path)
 
 # Função para classificar URL
 def classificar_url(url):

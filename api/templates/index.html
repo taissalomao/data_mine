@@ -53,13 +53,14 @@
         function checkURL() {
             var url = document.getElementById("urlInput").value.trim();
             var file = document.getElementById("fileInput").files[0];
-        
+            var apiUrl = window.location.origin + "/classify"; // URL dinâmica
+            
             if (url !== "" && file) {
                 alert("Por favor, preencha apenas o campo de URL ou selecione um arquivo, não ambos.");
             } else if (url !== "") {
                 var data = { "url": url };
         
-                fetch("http://localhost:5000/classify", {
+                fetch(apiUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -81,7 +82,7 @@
                 var formData = new FormData();
                 formData.append("file", file);
         
-                fetch("http://localhost:5000/classify", {
+                fetch(apiUrl, {
                     method: "POST",
                     body: formData
                 })
@@ -114,5 +115,6 @@
             }
         }
     </script>
+    
 </body>
 </html>
